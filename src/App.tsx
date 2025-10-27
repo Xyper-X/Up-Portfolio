@@ -23,9 +23,11 @@ import {
   Download,
   Phone,
   MapPin,
-  Send
+  Send,
+  Menu,
+  X
 } from 'lucide-react';
-import { submitContactMessage } from './lib/supabase';
+import { submitContactMessage, getProjects, type Project } from './lib/supabase';
 
 function App() {
   const [activeSection, setActiveSection] = useState('about');
@@ -36,6 +38,8 @@ function App() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -108,6 +112,7 @@ function App() {
               <Shield className="w-8 h-8 text-red-600 animate-float" />
               <span className="text-xl font-bold animate-gradient-text">Sibin</span>
             </div>
+
             <div className="hidden md:block">
               <div className="flex space-x-1 overflow-x-auto no-scrollbar">
                 {navItems.map((item, index) => (
@@ -128,7 +133,38 @@ function App() {
                 ))}
               </div>
             </div>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-gray-400 hover:text-red-500 transition-colors duration-300"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden pb-4 animate-fade-in">
+              <div className="flex flex-col space-y-2">
+                {navItems.map((item, index) => (
+                  <a
+                    key={item.name}
+                    href={`#${item.name}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`
+                      py-3 px-4 rounded-md transition-all duration-300 flex items-center gap-3
+                      ${activeSection === item.name
+                        ? 'text-red-500 bg-red-500/10'
+                        : 'text-gray-400 hover:text-red-500 hover:bg-red-500/5'}
+                    `}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="capitalize">{item.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -259,52 +295,47 @@ function App() {
         <section id="skills" className="py-16 scroll-mt-20 reveal">
           <h2 className="text-3xl font-bold text-red-500 mb-12 text-center animate-gradient-text">Skills & Technologies</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6 reveal">
+            <div className="space-y-4 reveal">
               <h3 className="text-2xl font-semibold text-white mb-6">Security Tools</h3>
-              {[
-                { name: 'Nmap', level: 95 },
-                { name: 'Wireshark', level: 90 },
-                { name: 'Metasploit', level: 85 },
-                { name: 'Nessus', level: 88 },
-                { name: 'Burpsuite', level: 92 },
-                { name: 'OWASP ZAP', level: 85 }
-              ].map((skill, index) => (
-                <div key={index} className="space-y-2" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">{skill.name}</span>
-                    <span className="text-red-500">{skill.level}%</span>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  'Nmap',
+                  'Wireshark',
+                  'Metasploit',
+                  'Nessus',
+                  'Burpsuite',
+                  'OWASP ZAP'
+                ].map((skill, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-900 p-4 rounded-lg border border-red-600 text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <span className="text-gray-300 font-medium">{skill}</span>
                   </div>
-                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden skill-bar">
-                    <div
-                      className="h-full bg-red-600 rounded-full animate-progress"
-                      style={{ width: `${skill.level}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-            <div className="space-y-6 reveal">
+            <div className="space-y-4 reveal">
               <h3 className="text-2xl font-semibold text-white mb-6">Programming & Scripting</h3>
-              {[
-                { name: 'Python', level: 88 },
-                { name: 'Bash Scripting', level: 85 },
-                { name: 'SQL', level: 80 },
-                { name: 'JavaScript', level: 75 },
-                { name: 'PowerShell', level: 82 }
-              ].map((skill, index) => (
-                <div key={index} className="space-y-2" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">{skill.name}</span>
-                    <span className="text-red-500">{skill.level}%</span>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  'Python',
+                  'Bash Scripting',
+                  'SQL',
+                  'JavaScript',
+                  'PowerShell',
+                  'Go'
+                ].map((skill, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-900 p-4 rounded-lg border border-red-600 text-center transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <span className="text-gray-300 font-medium">{skill}</span>
                   </div>
-                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden skill-bar">
-                    <div
-                      className="h-full bg-red-600 rounded-full animate-progress"
-                      style={{ width: `${skill.level}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -335,35 +366,35 @@ function App() {
         <section id="projects" className="py-16 scroll-mt-20 reveal">
           <h2 className="text-3xl font-bold text-red-500 mb-12 text-center animate-gradient-text">Security Projects</h2>
           <div className="space-y-8">
-            {[
-              {
-                title: 'Security Audit Tool',
-                description: 'Automated security assessment platform for enterprise systems',
-                tech: ['Python', 'Docker', 'REST API'],
-                details: 'Developed a comprehensive security audit tool that automatically scans and reports vulnerabilities in enterprise infrastructure.'
-              },
-              {
-                title: 'Threat Detection System',
-                description: 'ML-based system for identifying potential security threats',
-                tech: ['TensorFlow', 'Python', 'Elasticsearch'],
-                details: 'Created an advanced threat detection system using machine learning to identify and alert on potential security breaches in real-time.'
-              }
-            ].map((project, index) => (
+            {projects.map((project, index) => (
               <div
-                key={index}
-                className="bg-gray-900 p-8 rounded-lg border border-red-600 transform hover:-translate-y-2 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20"
+                key={project.id || index}
+                className="bg-gray-900 rounded-lg border border-red-600 transform hover:-translate-y-2 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20 overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <Lock className="w-8 h-8 text-red-500 mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
-                <p className="text-gray-300 mb-4">{project.description}</p>
-                <p className="text-gray-400 mb-6">{project.details}</p>
-                <div className="flex flex-wrap gap-3">
-                  {project.tech.map((tech, i) => (
-                    <span key={i} className="bg-red-900 text-red-200 px-3 py-1 rounded-full text-sm">
-                      {tech}
-                    </span>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+                  {project.image_url && (
+                    <div className="md:col-span-1 h-64 md:h-auto">
+                      <img
+                        src={project.image_url}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className={`p-8 ${project.image_url ? 'md:col-span-2' : 'md:col-span-3'}`}>
+                    <Lock className="w-8 h-8 text-red-500 mb-4" />
+                    <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
+                    <p className="text-gray-300 mb-4">{project.description}</p>
+                    {project.details && <p className="text-gray-400 mb-6">{project.details}</p>}
+                    <div className="flex flex-wrap gap-3">
+                      {project.tech.map((tech, i) => (
+                        <span key={i} className="bg-red-900 text-red-200 px-3 py-1 rounded-full text-sm">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
