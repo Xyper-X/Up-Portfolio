@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
 import { Mail, Clock, CheckCircle, Circle, Trash2, LogOut, Shield } from 'lucide-react';
 
-interface ContactMessage {
+interface StoredMessage {
   id: string;
   name: string;
   email: string;
@@ -12,58 +11,49 @@ interface ContactMessage {
 }
 
 export function AdminDashboard() {
-  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [messages, setMessages] = useState<StoredMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<StoredMessage | null>(null);
 
   useEffect(() => {
-    fetchMessages();
+    loadMessages();
   }, []);
 
-  const fetchMessages = async () => {
+  const loadMessages = () => {
     try {
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMessages(data || []);
+      const stored = localStorage.getItem('contact_messages');
+      const parsedMessages = stored ? JSON.parse(stored) : [];
+      setMessages(parsedMessages.sort((a: StoredMessage, b: StoredMessage) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ));
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error loading messages:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const markAsRead = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .update({ read: true })
-        .eq('id', id);
+  const markAsRead = (id: string) => {
+    const updated = messages.map(m =>
+      m.id === id ? { ...m, read: true } : m
+    );
+    setMessages(updated);
+    localStorage.setItem('contact_messages', JSON.stringify(updated));
 
-      if (error) throw error;
-      fetchMessages();
-    } catch (error) {
-      console.error('Error marking message as read:', error);
+    if (selectedMessage?.id === id) {
+      setSelectedMessage({ ...selectedMessage, read: true });
     }
   };
 
-  const deleteMessage = async (id: string) => {
+  const deleteMessage = (id: string) => {
     if (!confirm('Are you sure you want to delete this message?')) return;
 
-    try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', id);
+    const updated = messages.filter(m => m.id !== id);
+    setMessages(updated);
+    localStorage.setItem('contact_messages', JSON.stringify(updated));
 
-      if (error) throw error;
+    if (selectedMessage?.id === id) {
       setSelectedMessage(null);
-      fetchMessages();
-    } catch (error) {
-      console.error('Error deleting message:', error);
     }
   };
 
@@ -88,10 +78,10 @@ export function AdminDashboard() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Shield className="w-8 h-8 text-red-600" />
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold">Messages</h1>
             {unreadCount > 0 && (
               <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-                {unreadCount} unread
+                {unreadCount} new
               </span>
             )}
           </div>
@@ -108,7 +98,7 @@ export function AdminDashboard() {
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-4">
-            <h2 className="text-xl font-bold text-red-500 mb-4">Messages ({messages.length})</h2>
+            <h2 className="text-xl font-bold text-red-500 mb-4">Inbox ({messages.length})</h2>
             <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
               {messages.length === 0 ? (
                 <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 text-center text-gray-400">
@@ -137,7 +127,7 @@ export function AdminDashboard() {
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-red-500" />
-                        <span className="font-semibold">{message.name}</span>
+                        <span className="font-semibold text-sm">{message.name}</span>
                       </div>
                       {message.read ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />

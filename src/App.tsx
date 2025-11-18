@@ -69,6 +69,14 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const loadProjects = async () => {
+      const loaded = await getProjects();
+      setProjects(loaded);
+    };
+    loadProjects();
+  }, []);
+
   const handleDownload = async () => {
     setIsDownloading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -81,6 +89,21 @@ function App() {
     setIsSubmitting(true);
     try {
       await submitContactMessage(formData);
+
+      const newMessage = {
+        id: Date.now().toString(),
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        created_at: new Date().toISOString(),
+        read: false
+      };
+
+      const stored = localStorage.getItem('contact_messages');
+      const messages = stored ? JSON.parse(stored) : [];
+      messages.push(newMessage);
+      localStorage.setItem('contact_messages', JSON.stringify(messages));
+
       setFormData({ name: '', email: '', message: '' });
       alert('Message sent successfully! I will get back to you soon.');
     } catch (error) {
