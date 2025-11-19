@@ -10,6 +10,9 @@ interface StoredMessage {
   read: boolean;
 }
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
 export function AdminDashboard() {
   const [messages, setMessages] = useState<StoredMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,13 +22,26 @@ export function AdminDashboard() {
     loadMessages();
   }, []);
 
-  const loadMessages = () => {
+  const loadMessages = async () => {
     try {
-      const stored = localStorage.getItem('contact_messages');
-      const parsedMessages = stored ? JSON.parse(stored) : [];
-      setMessages(parsedMessages.sort((a: StoredMessage, b: StoredMessage) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      ));
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/save-contact-message`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const sortedMessages = (data.data || []).sort((a: StoredMessage, b: StoredMessage) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setMessages(sortedMessages);
+      }
     } catch (error) {
       console.error('Error loading messages:', error);
     } finally {
@@ -33,27 +49,50 @@ export function AdminDashboard() {
     }
   };
 
-  const markAsRead = (id: string) => {
-    const updated = messages.map(m =>
-      m.id === id ? { ...m, read: true } : m
-    );
-    setMessages(updated);
-    localStorage.setItem('contact_messages', JSON.stringify(updated));
+  const markAsRead = async (id: string) => {
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/save-contact-message`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id, read: true }),
+        }
+      );
 
-    if (selectedMessage?.id === id) {
-      setSelectedMessage({ ...selectedMessage, read: true });
+      if (response.ok) {
+        loadMessages();
+      }
+    } catch (error) {
+      console.error('Error marking message as read:', error);
     }
   };
 
-  const deleteMessage = (id: string) => {
+  const deleteMessage = async (id: string) => {
     if (!confirm('Are you sure you want to delete this message?')) return;
 
-    const updated = messages.filter(m => m.id !== id);
-    setMessages(updated);
-    localStorage.setItem('contact_messages', JSON.stringify(updated));
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/save-contact-message`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id }),
+        }
+      );
 
-    if (selectedMessage?.id === id) {
-      setSelectedMessage(null);
+      if (response.ok) {
+        setSelectedMessage(null);
+        loadMessages();
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
     }
   };
 

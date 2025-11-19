@@ -36,22 +36,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const adminEmail = Deno.env.get("ADMIN_EMAIL");
-    if (!adminEmail) {
-      throw new Error("ADMIN_EMAIL not configured");
-    }
-
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY not configured");
-    }
+    const resendApiKey = "re_P3wioeK1_7Ap255ESMC7XHXoLLv5Fw8wX";
+    const adminEmail = "shadowcyber2004@gmail.com";
 
     const emailBody = `
-      <h2>New Contact Message</h2>
+      <h2>New Contact Message from Your Portfolio</h2>
       <p><strong>From:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Message:</strong></p>
-      <p>${message.replace(/\n/g, "<br/>")}</p>
+      <p style="white-space: pre-wrap; background-color: #f5f5f5; padding: 10px; border-radius: 5px;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>")}</p>
+      <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;" />
+      <p style="color: #666; font-size: 12px;">This message was sent via your portfolio contact form.</p>
     `;
 
     const response = await fetch("https://api.resend.com/emails", {
@@ -61,7 +56,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "noreply@sibinc.com",
+        from: "Contact Form <onboarding@resend.dev>",
         to: adminEmail,
         subject: `New Contact Message from ${name}`,
         html: emailBody,
@@ -70,7 +65,8 @@ Deno.serve(async (req: Request) => {
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`Resend API error: ${error}`);
+      console.error("Resend API error:", error);
+      throw new Error(`Email service error: ${response.status}`);
     }
 
     const result = await response.json();

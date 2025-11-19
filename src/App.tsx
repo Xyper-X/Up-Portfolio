@@ -88,21 +88,26 @@ function App() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
       await submitContactMessage(formData);
 
-      const newMessage = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        created_at: new Date().toISOString(),
-        read: false
-      };
+      const saveResponse = await fetch(
+        `${supabaseUrl}/functions/v1/save-contact-message`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      const stored = localStorage.getItem('contact_messages');
-      const messages = stored ? JSON.parse(stored) : [];
-      messages.push(newMessage);
-      localStorage.setItem('contact_messages', JSON.stringify(messages));
+      if (!saveResponse.ok) {
+        throw new Error('Failed to save message');
+      }
 
       setFormData({ name: '', email: '', message: '' });
       alert('Message sent successfully! I will get back to you soon.');
