@@ -97,6 +97,8 @@ Deno.serve(async (req: Request) => {
       messages.push(newMessage);
       await Deno.writeTextFile(filePath, JSON.stringify(messages, null, 2));
 
+      console.log(`Message saved: ${newMessage.id} from ${name}`);
+
       return new Response(
         JSON.stringify({
           success: true,
