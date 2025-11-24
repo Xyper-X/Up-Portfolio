@@ -29,6 +29,15 @@ export async function getProjects(): Promise<Project[]> {
   }
 }
 
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+}
+
 export async function submitContactMessage(formData: {
   name: string;
   email: string;
@@ -51,9 +60,68 @@ export async function submitContactMessage(formData: {
       throw new Error('Failed to send message');
     }
 
-    return await response.json();
+    const emailResult = await response.json();
+
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          read: false
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
+    return { email: emailResult, db: data };
   } catch (error) {
     console.error('Error submitting contact message:', error);
+    throw error;
+  }
+}
+
+export async function getContactMessages(): Promise<ContactMessage[]> {
+  try {
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    return [];
+  }
+}
+
+export async function markMessageAsRead(id: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('contact_messages')
+      .update({ read: true })
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error marking message as read:', error);
+    throw error;
+  }
+}
+
+export async function deleteContactMessage(id: string): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('contact_messages')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting message:', error);
     throw error;
   }
 }
