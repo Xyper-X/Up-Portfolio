@@ -558,156 +558,85 @@ function App() {
 
         <section id="contact" className="py-16 scroll-mt-20 reveal">
           <h2 className="text-3xl font-bold text-red-500 mb-12 text-center animate-gradient-text">Contact Me</h2>
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="bg-gray-900 p-6 rounded-lg border border-red-600 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-red-600/20 rounded-lg">
-                      <Mail className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Email</h3>
-                      <a href="mailto:sibin@cybersecurity.com" className="text-gray-400 hover:text-red-500 transition-colors duration-300">
-                        sibin@cybersecurity.com
-                      </a>
-                    </div>
-                  </div>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gray-900 p-8 rounded-lg border border-red-600">
+              <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300"
+                    placeholder="Your name"
+                  />
                 </div>
 
-                <div className="bg-gray-900 p-6 rounded-lg border border-red-600 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-red-600/20 rounded-lg">
-                      <Phone className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Phone</h3>
-                      <a href="tel:+1234567890" className="text-gray-400 hover:text-red-500 transition-colors duration-300">
-                        +1 (234) 567-890
-                      </a>
-                    </div>
-                  </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300"
+                    placeholder="your.email@example.com"
+                  />
                 </div>
 
-                <div className="bg-gray-900 p-6 rounded-lg border border-red-600 transform hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-red-900/20">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-red-600/20 rounded-lg">
-                      <MapPin className="w-6 h-6 text-red-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Location</h3>
-                      <p className="text-gray-400">
-                        San Francisco, CA<br />
-                        United States
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="bg-gray-900 p-8 rounded-lg border border-red-600">
-                  <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300"
-                        placeholder="Your name"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300"
-                        placeholder="your.email@example.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                        Message
-                      </label>
-                      <textarea
-                        id="message"
-                        required
-                        rows={5}
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300 resize-none"
-                        placeholder="Your message..."
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`
-                        w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold
-                        transform transition-all duration-300
-                        ${isSubmitting
-                          ? 'bg-gray-700 text-gray-300 cursor-wait'
-                          : 'bg-red-600 hover:bg-red-700 hover:scale-105 hover:shadow-lg hover:shadow-red-600/50'
-                        }
-                      `}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                          <span>Sending...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          <span>Send Message</span>
-                        </>
-                      )}
-                    </button>
-                  </form>
-
-                  <div className="mt-6 p-4 bg-red-900/20 rounded-lg">
-                    <p className="text-gray-300 text-sm">
-                      <span className="text-red-400">Response Time:</span> I typically respond within 24-48 hours. For urgent security matters, please use the phone contact above.
-                    </p>
-                  </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    required
+                    rows={6}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500 text-white transition-colors duration-300 resize-none"
+                    placeholder="Your message..."
+                  />
                 </div>
 
-                <div className="bg-gradient-to-r from-red-900/20 via-red-600/20 to-red-900/20 p-6 rounded-lg">
-                  <h3 className="text-xl font-bold text-white mb-4">Connect on Social</h3>
-                  <div className="flex gap-4">
-                    {[
-                      { icon: Github, href: 'https://github.com', label: 'GitHub' },
-                      { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-                      { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' }
-                    ].map((social, index) => (
-                      <a
-                        key={index}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 bg-gray-900 rounded-lg border border-red-600 text-gray-400 hover:text-red-500 hover:bg-red-600/10 transition-all duration-300 transform hover:scale-110"
-                        aria-label={social.label}
-                      >
-                        <social.icon className="w-6 h-6" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`
+                    w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold
+                    transform transition-all duration-300
+                    ${isSubmitting
+                      ? 'bg-gray-700 text-gray-300 cursor-wait'
+                      : 'bg-red-600 hover:bg-red-700 hover:scale-105 hover:shadow-lg hover:shadow-red-600/50'
+                    }
+                  `}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      <span>Send Message</span>
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-6 p-4 bg-red-900/20 rounded-lg">
+                <p className="text-gray-300 text-sm">
+                  <span className="text-red-400">Note:</span> I typically respond within 24-48 hours. I value every message and will get back to you soon.
+                </p>
               </div>
             </div>
           </div>
