@@ -642,8 +642,76 @@ function App() {
           </div>
         </section>
 
-        <footer className="mt-16 pt-8 border-t border-red-900 mb-8 reveal">
-          <p className="text-gray-400 text-center">&copy; 2024 Cybersecurity Portfolio</p>
+        <footer className="mt-16 bg-gray-950 border-t border-red-900 py-12 reveal">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              <div>
+                <h3 className="text-lg font-bold text-white mb-4">Quick Links</h3>
+                <ul className="space-y-2">
+                  {['about', 'skills', 'certificates', 'projects', 'contact'].map((item) => (
+                    <li key={item}>
+                      <a
+                        href={`#${item}`}
+                        className="text-gray-400 hover:text-red-500 transition-colors duration-300 capitalize"
+                      >
+                        {item}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-white mb-4">Content</h3>
+                <ul className="space-y-2">
+                  {['achievements', 'blogs'].map((item) => (
+                    <li key={item}>
+                      <a
+                        href={`#${item}`}
+                        className="text-gray-400 hover:text-red-500 transition-colors duration-300 capitalize"
+                      >
+                        {item.charAt(0).toUpperCase() + item.slice(1)}
+                      </a>
+                    </li>
+                  ))}
+                  <li>
+                    <a
+                      href="/admin"
+                      className="text-gray-400 hover:text-red-500 transition-colors duration-300"
+                    >
+                      Admin Panel
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-white mb-4">Connect</h3>
+                <div className="flex gap-3">
+                  {[
+                    { icon: Github, href: 'https://github.com', label: 'GitHub' },
+                    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+                    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' }
+                  ].map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-gray-900 rounded-lg border border-red-600 text-gray-400 hover:text-red-500 hover:bg-red-600/10 transition-all duration-300 transform hover:scale-110"
+                      aria-label={social.label}
+                    >
+                      <social.icon className="w-5 h-5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800 pt-8">
+              <p className="text-gray-500 text-center">&copy; 2024 Cybersecurity Portfolio. All rights reserved.</p>
+            </div>
+          </div>
         </footer>
       </div>
     </div>
