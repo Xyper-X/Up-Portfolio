@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Lock, LayoutDashboard, FileText } from 'lucide-react';
 import { AdminDashboard } from '../components/AdminDashboard';
+import { AdminContentManager } from '../components/AdminContentManager';
 
 export function Admin() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [activePanel, setActivePanel] = useState<'dashboard' | 'content'>('dashboard');
 
   useEffect(() => {
     const auth = sessionStorage.getItem('admin_auth');
@@ -30,7 +32,33 @@ export function Admin() {
   };
 
   if (isAuthenticated) {
-    return <AdminDashboard />;
+    return (
+      <>
+        {activePanel === 'dashboard' && (
+          <div className="absolute top-4 right-4 z-50">
+            <button
+              onClick={() => setActivePanel('content')}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors duration-300 flex items-center gap-2"
+            >
+              <FileText className="w-5 h-5" />
+              Content Manager
+            </button>
+          </div>
+        )}
+        {activePanel === 'content' && (
+          <div className="absolute top-4 right-4 z-50">
+            <button
+              onClick={() => setActivePanel('dashboard')}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors duration-300 flex items-center gap-2"
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              Messages
+            </button>
+          </div>
+        )}
+        {activePanel === 'dashboard' ? <AdminDashboard /> : <AdminContentManager />}
+      </>
+    );
   }
 
   return (
